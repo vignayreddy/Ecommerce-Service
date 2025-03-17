@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useCartStore } from "../stores/useCartStore";
 import { Link } from "react-router-dom";
@@ -7,7 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
 
 const stripePromise = loadStripe(
-	"pk_test_51KZYccCoOZF2UhtOwdXQl3vcizup20zqKqT9hVUIsVzsdBrhqbUI2fE0ZdEVLdZfeHjeyFXtqaNsyCJCmZWnjNZa00PzMAjlcL"
+	"pk_test_51QsL6H2MyhlMzzDPrUBl2xz3EdtxjORxTnhxNmYJgdMS2Ret7W5MtHZdHRdfyos7q6CVZHzSyxWAeGarK6unKXM200byr1BiwL"
 );
 
 const OrderSummary = () => {
@@ -20,18 +19,33 @@ const OrderSummary = () => {
 
 	const handlePayment = async () => {
 		const stripe = await stripePromise;
-		const res = await axios.post("/payments/create-checkout-session", {
-			products: cart,
-			couponCode: coupon ? coupon.code : null,
-		});
+		try {
+			const res = await axios.post("/payments/create-checkout-session", {
+				products: cart,
+				couponCode: coupon ? coupon.code : null,
+			});
 
-		const session = res.data;
-		const result = await stripe.redirectToCheckout({
-			sessionId: session.id,
-		});
+			const session = res.data;
+			if (!session.id) {
+				console.error("No session ID returned from the backend:", session);
+				return;
+			}
 
-		if (result.error) {
-			console.error("Error:", result.error);
+			console.log("Session Data: ", session)
+			console.log("Session url", session.url)
+
+			// const result = await stripe.redirectToCheckout({
+			// 	sessionId: session.id,
+			// });
+
+			// if (result.error) {
+			// 	console.error("Error during redirection:", result.error);
+			// }
+			window.location.href = session.url;	
+
+		} catch (error) {
+			console.error("Error creating checkout session:", error);
+
 		}
 	};
 

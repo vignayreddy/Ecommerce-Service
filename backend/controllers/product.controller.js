@@ -13,30 +13,30 @@ export const getAllProducts = async (req, res) => {
 
 
 export const getFeaturedProducts = async (req, res) => {
-  try {
-    let featuredProducts = await redis.get("featured_products");
+	try {
+		let featuredProducts = await redis.get("featured_products");
+		if (featuredProducts) {
+			return res.json(JSON.parse(featuredProducts));
+		}
 
-    if (featuredProducts) {
-      return res.json(JSON.parse(featuredProducts));
-    }
+		// if not in redis, fetch from mongodb
+		// .lean() is gonna return a plain javascript object instead of a mongodb document
+		// which is good for performance
+		featuredProducts = await Product.find({ isFeatured: true }).lean();
 
-    // if it is not in redis, fetch from mongodb
-    // .lean() is gonna return aplain javascript object instead of a mongodb document
-    // which is good for performance
+		if (!featuredProducts) {
+			return res.status(404).json({ message: "No featured products found" });
+		}
 
-    featuredProducts = await Product.find({ isFeatured: true }).lean();
-    if (!featuredProducts) {
-      return res.status(404).json({ message: "No featured products found" });
-    }
-    //store in redis for future quick access
+		// store in redis for future quick access
 
-    await redis.set("featured_products", JSON.stringify(featuredProducts));
-    res.json(featuredProducts);
+		await redis.set("featured_products", JSON.stringify(featuredProducts));
 
-  } catch (error) {
-    console.log("Error in getFeaturedProducts Controller", error.message);
-    res.status(500).join({ message: "Server error", error: error.message });
-  }
+		res.json(featuredProducts);
+	} catch (error) {
+		console.log("Error in getFeaturedProducts controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
 };
 
 export const createProduct = async (req, res) => {
@@ -88,7 +88,7 @@ export const deleteProduct = async (req, res) => {
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.log("Error in deleteProduct  Controller", error.message);
-    res.status(500).join({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -112,7 +112,7 @@ export const getRecommendedProducts = async (req, res) => {
     res.json(products);
   } catch (error) {
     console.log("Error in getRecommendedProducts Controller", error.message);
-    res.status(500).join({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -123,7 +123,7 @@ export const getProductsByCategory = async (req, res) => {
     res.json(products);
   } catch (error) {
     console.log("Error in getProductsByCategory  Controller", error.message);
-    res.status(500).join({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -140,13 +140,13 @@ export const toggleFeaturedProduct = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in toggleFeaturedProduct  Controller", error.message);
-    res.status(500).join({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 async function updateFeaturedProductsCache() {
   try {
-    const featuredProducts = await Product.find({ isFeature: true }).lean();
+    const featuredProducts = await Product.find({ isFeatured: true }).lean();
     await redis.set("featured_products", JSON.stringify(featuredProducts));
   } catch (error) {
     console.log("Error in updatecachefunction");

@@ -18,6 +18,7 @@ const HomePage = () => {
 
 	useEffect(() => {
 		fetchFeaturedProducts();
+		console.log('Featured Products: ', products);	
 	}, [fetchFeaturedProducts]);
 
 	return (
@@ -36,7 +37,7 @@ const HomePage = () => {
 					))}
 				</div>
 
-				{/* {!isLoading && products.length > 0 && <FeaturedProducts featuredProducts={products} />} */}
+				{/* {!isLoading && products.length >= 0 && <FeaturedProducts featuredProducts={products} />} */}
 			</div>
 		</div>
 	);
