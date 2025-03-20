@@ -1,20 +1,30 @@
 import { motion } from "framer-motion";
 import { Trash, Star } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
+import { useEffect, useState } from "react";
 
 const ProductsList = () => {
   const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
 
   console.log("products", products);
+  const [prds, setPrds] = useState([]);
+  useEffect(() => {
+    if(products?.length > 15) {
+      setPrds(products.slice(0, 15));
+    }else{
+      setPrds(products);
+    }
+  }, [products]);
+  console.log(prds);
 
   return (
     <motion.div
       className="bg-gray-800 shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <table className=" min-w-full divide-y divide-gray-700">
+      <table className="min-w-full divide-y divide-gray-700">
         <thead className="bg-gray-700">
           <tr>
             <th
@@ -52,7 +62,7 @@ const ProductsList = () => {
         </thead>
 
         <tbody className="bg-gray-800 divide-y divide-gray-700">
-          {products?.map((product) => (
+          {prds?.map((product) => (
             <tr key={product._id} className="hover:bg-gray-700">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
