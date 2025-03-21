@@ -17,7 +17,7 @@ const data = [
         }
       ],
       "totalAmount": 4693,
-      "stripeSessionId": "sess_abc123"
+      "stripeSessionId": "sess_abc12334"
     },
     {
       "user": "65f4b3d145f8e679c86e5678",
@@ -29,7 +29,7 @@ const data = [
         }
       ],
       "totalAmount": 3852,
-      "stripeSessionId": "sess_def456"
+      "stripeSessionId": "sess_def45677"
     },
     {
       "user": "65f4c4e245f8e679c86e9012",
@@ -46,7 +46,7 @@ const data = [
         }
       ],
       "totalAmount": 3535,
-      "stripeSessionId": "sess_ghi789"
+      "stripeSessionId": "sess_ghi78901"
     }
   ]
 
